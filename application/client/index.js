@@ -33,9 +33,6 @@ export default class Index extends React.Component
 				</Router>
 			);
 	}
-	componentWillMount() {
-		Analytics.initialize('UA-4454182-4');
-	}
 }
 
 	Loadable.preloadReady().then(() => {
