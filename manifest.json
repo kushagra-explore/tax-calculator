@@ -1,0 +1,13 @@
+{
+  "name": "Tax Compare and Calculator 2020",
+  "short_name": "Tax Calci",
+  "description": "Compare Tax from new and old regieme",
+  "start_url": "/?start_url=homescreen",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#05818D",
+  "theme_color": "#05818D",
+  "author": {
+    "name": "Kushagra Varshney"
+  }
+}
