@@ -23,48 +23,80 @@ class MainPage extends Component {
         this.oldTaxableSalary = taxableSalary;
         this.setState({submit: true});
     };
-    calculateTaxableSalary(){
+    calculateTaxableSalary() {
         const finalIncome = this.mState.annualIncome;
         const G80 = this.mState.G80_50 * 0.5 + this.mState.G80_100;
         const finalHRA = this.calculateFinalHRA();
         console.log(finalIncome, "   ", G80, "  ", finalHRA, "  ", this.mState.medical, "  ", this.mState.NPS, "  ", this.mState.C80, "  ",
             this.mState.lta, "  ", this.mState.other);
         return finalIncome - 50000 - G80 - finalHRA - this.mState.medical - this.mState.NPS - this.mState.C80 - this.mState.lta -
-            this.mState.other ;
+            this.mState.other;
     }
     calculateFinalHRA(){
         const actualRent = this.mState.rent;
-        const hra = this.state.metro && this.state.metro === "true" ? (0.5 *  this.mState.basic) : (0.4 *  this.mState.basic) ;
-        const rentFinal = actualRent - 0.1 *  this.mState.basic;
+        const basicSalary = this.mState.basic * this.mState.annualIncome;
+        const hra = this.state.metro && this.state.metro === "true" ? (0.5 *  basicSalary) : (0.4 *  basicSalary) ;
+        const rentFinal = actualRent - 0.1 *  basicSalary;
         return Math.min(hra, rentFinal);
     }
+    calculateOptimumBasic(){
+        const actualRent = this.mState.rent;
+        let optHra = []
+        for(let basicP of MainPage.basicSlabs){
+            const basicSalary = basicP * this.mState.annualIncome;
+            const hra = this.state.metro && this.state.metro === "true" ? (0.5 *  basicSalary) : (0.4 *  basicSalary) ;
+            const rentFinal = actualRent - 0.1 *  basicSalary;
+            const actualHra = Math.min(hra, rentFinal);
+            optHra.push({"basicP" : basicP, "hra" : actualHra});
+        }
+        optHra.sort((h1, h2) => h2.hra - h1.hra);
+        return optHra;
+    }
+
+    generateOptBasicResponse(){
+        const optHra = this.calculateOptimumBasic();
+        return optHra.map((tuple, i) =>
+            <li key={'optBasic' + i}>
+                <p>{tuple.basicP * 100}</p>
+            </li>
+        );
+    }
+
     generateResponse(){
         return (
-            <div>
-                <h2>Tax under old regime : {this.oldTax} (Taxable Salary : {this.oldTaxableSalary})</h2>
-                <h2>Tax under new regime : {this.newTax}</h2>
-                <br/>
-                <h4>Disclaimer: This is just an approximation the actual values might differ</h4>
-            </div>
+            <React.Fragment>
+                <div>
+                    <h2>Tax under old regime : {this.oldTax} (Taxable Salary : {this.oldTaxableSalary})</h2>
+                    <h2>Tax under new regime : {this.newTax}</h2>
+                    <br/>
+                    <h4>Disclaimer: This is just an approximation the actual values might differ</h4>
+                </div>
+                <div>
+                    <h4>If your company gives you flexibility of choosing basic slab then your optimum hra would be as follows</h4>
+                    <ul>
+                        {this.generateOptBasicResponse()}
+                    </ul>
+                </div>
+            </React.Fragment>
         );
     }
     generateRequestForm(){
         return (
             <div>
-                <h3>This Form is just for salaried people as non salaried people will definitely benefit from new regime</h3>
+                <h5>This Form is just for salaried people as non salaried people will definitely benefit from new regime</h5>
                 <label>
                     Annual Income:
-                    <input type="number" name= "Annual Income" value= {this.state.annualIncome} onChange={this.handleAnnualIncomeChange} required/>
+                    <input type="number" placeholder="Annual Salary" name= "Annual Income" value= {this.state.annualIncome} onChange={this.handleAnnualIncomeChange} required/>
                 </label>
                 <br/>
                 <label>
-                    Basic Income:
-                    <input type="number" name= "Basic Income" value= {this.state.basic} onChange={this.handleBasicChange} required />
+                    Basic Percentage :
+                    <input type="number" placeholder="In % (The percentage of your annual salary, Generally it is 50% of your total annual salary)" name= "Basic Income" value= {this.state.basic} onChange={this.handleBasicChange} required />
                 </label>
                 <br/>
                 <label>
                     Actual Rent Paid:
-                    <input type="number" name= "rent paid" value= {this.state.rent} onChange={this.handleRentChange} />
+                    <input type="number" placeholder="Annual Rent Paid" name= "rent paid" value= {this.state.rent} onChange={this.handleRentChange} />
                 </label>
                     <br/>
                 <label>
@@ -75,32 +107,32 @@ class MainPage extends Component {
                         <br/>
                 <label>
                     LTA:
-                    <input type="number"  name="LTA" value = {this.state.lta} onChange={this.handleLTAChange} />
+                    <input type="number" placeholder="Leave Travel Allowance"  name="LTA" value = {this.state.lta} onChange={this.handleLTAChange} />
                 </label>
                             <br/>
                 <label>
                     80C:
-                    <input type="number"  name="80C" value = {this.state.C80} onChange={this.handleC80Change} />
+                    <input type="number"  name="80C" placeholder="80C Investments" value = {this.state.C80} onChange={this.handleC80Change} />
                 </label>
                 <br/>
                 <label>
                     Medical Insurance:
-                    <input type="number"  name="Medical" value = {this.state.medical} onChange={this.handleMedicalChange} />
+                    <input type="number"  name="Medical"  value = {this.state.medical} onChange={this.handleMedicalChange} />
                 </label>
                 <br/>
                 <label>
                     NPS:
-                    <input type="number" name="NPS"  value = {this.state.NPS} onChange={this.handleNPSChange} />
+                    <input type="number" name="NPS" placeholder="National Pension Scheme"  value = {this.state.NPS} onChange={this.handleNPSChange} />
                 </label>
                 <br/>
                 <label>
                     80G(100%):
-                    <input type="number" name="80G100"   value = {this.state.G80_100} onChange={this.handle80G_100Change} />
+                    <input type="number" name="80G100"  placeholder="Fully Exempt Donations" value = {this.state.G80_100} onChange={this.handle80G_100Change} />
                 </label>
                 <br/>
                 <label>
                     80G(50%):
-                    <input type="number"  name="80G50" value = {this.state.G80_50} onChange={this.handle80G_50Change} />
+                    <input type="number"  name="80G50" placeholder="Partially Exempt Donations" value = {this.state.G80_50} onChange={this.handle80G_50Change} />
                 </label>
                 <br/>
                 <label>
@@ -109,8 +141,8 @@ class MainPage extends Component {
                 </label>
                 <br/>
                 <label>
-                    Tax Rebates on New Regime (Include all like housing loan interest etc) :
-                    <input type="number" name="otherNew"  value = {this.state.otherNew} onChange={this.handleNewTaxDeductionsChange} />
+                    Tax Rebates on New Regime :
+                    <input type="number" name="otherNew" placeholder="Include all like housing loan interest etc"  value = {this.state.otherNew} onChange={this.handleNewTaxDeductionsChange} />
                 </label>
                 <br/>
                 <button type="submit" value="Submit" onClick={this.handleSubmit}>Submit</button>
@@ -119,6 +151,8 @@ class MainPage extends Component {
     }
     render() {
         return(<React.Fragment>
+                <h2>Your data is safe, all the values are computed at FE, no network call is being made</h2>
+            <h4>We <strong>do not</strong> track anything</h4>
                 {this.generateRequestForm() }
                 {this.state.submit ? this.generateResponse() : ''}
             </React.Fragment>);
@@ -132,7 +166,7 @@ class MainPage extends Component {
 
     handleBasicChange = (event) => {
         this.setState({basic : event.target.value});
-        this.mState.basic = event.target.value;
+        this.mState.basic = event.target.value / 100;
     };
 
     handleMetroChange = (event) => {
@@ -200,6 +234,7 @@ class MainPage extends Component {
     static newSlab = [MainPage.slab0, MainPage.slab1, MainPage.slab2, MainPage.slab3, MainPage.slab4, MainPage.slab5];
     static slab = [MainPage.slab0, MainPage.slab1, MainPage.slab3];
     static slabTax = [0, 12.5, 112.5];
+    static basicSlabs = [0.5, 0.4, 0.3];
 
     findTax(income){
         const normalisedIncome = income / MainPage.lakh;

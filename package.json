@@ -23,6 +23,7 @@
     "babel-preset-stage-0": "6.24.1",
     "clean-webpack-plugin": "0.1.19",
     "connect-timeout": "1.7.0",
+    "css-loader": "1.0.1",
     "ejs": "2.5.7",
     "express": "4.16.2",
     "express-session": "1.15.6",
