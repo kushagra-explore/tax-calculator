@@ -25,3 +25,30 @@ export function numberFormatter(number) {
     let numeral = round(wholeNumber/(multipliers[power-1].value), 1);
     return (numeral + multipliers[power-1].key);
 }
+
+export function getRupeesDisplayableAmountV2(amount, includePrefix = true, decimalPointPosition = 2) {
+    let finalAmount = amount;
+    if(amount < 1000){
+        finalAmount = parseFloat(finalAmount.toFixed(decimalPointPosition)).toString();
+    }
+    else if(amount < 100000) {
+        finalAmount = amount / 1000;
+        finalAmount = parseFloat(finalAmount.toFixed(decimalPointPosition)).toString();
+        if(includePrefix)
+            finalAmount += " K";
+    }
+    else if(amount < 10000000) {
+        finalAmount = amount / 100000;
+        finalAmount = parseFloat(finalAmount.toFixed(decimalPointPosition)).toString();
+        if(includePrefix)
+            finalAmount += " L";
+    }
+    else {
+        finalAmount = amount / 10000000;
+        finalAmount = parseFloat(finalAmount.toFixed(decimalPointPosition)).toString();
+        if(includePrefix)
+            finalAmount += " Cr";
+    }
+
+    return finalAmount;
+}
