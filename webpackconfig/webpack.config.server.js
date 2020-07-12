@@ -1,18 +1,9 @@
-/**
- * webpack.config.server.js
- *
- * (C) 2017 mobile.de GmbH
- *
- * @author <a href="mailto:pahund@team.mobile.de">Patrick Hund</a>
- * @since 09 Feb 2017
- */
+require('webpack');
+const path = require('path');
 
-var webpack = require('webpack');
-var path = require('path');
-
-var BUILD_DIR = path.resolve(__dirname, './../dist');
-var APP_DIR = path.resolve(__dirname, './../application/server');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const BUILD_DIR = path.resolve(__dirname, './../dist');
+const APP_DIR = path.resolve(__dirname, './../application/server');
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 
 const config = {
    entry: {
@@ -35,16 +26,17 @@ const config = {
        test: /\.(jsx|js)?$/,
        exclude: /(node_modules\/)/,
        use: {
-         loader: "babel-loader",
-         options: {
-           presets: ['react', 'es2015','stage-2'], // Transpiles JSX and ES6,
-            plugins: [
-              'syntax-dynamic-import',
-              'transform-class-properties',
-              'transform-object-assign',
-              'react-loadable/babel'
-            ],
-         }
+           loader: "babel-loader",
+           options: {
+               presets: ['@babel/preset-react', '@babel/preset-env'], // Transpiles JSX and ES6,
+               plugins: [
+                   '@babel/syntax-dynamic-import',
+                   '@babel/plugin-transform-runtime',
+                   '@babel/plugin-proposal-class-properties',
+                   '@babel/plugin-transform-object-assign',
+                   'react-loadable/babel'
+               ],
+           }
        }
      },
        {
@@ -71,7 +63,7 @@ const config = {
         minimize: false, // <---- disables uglify.
    },
    plugins: [
-
+       new CleanWebpackPlugin({ verbose: true })
   ]
 };
 

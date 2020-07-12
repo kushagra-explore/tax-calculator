@@ -1,18 +1,10 @@
-/**
- * webpack.config.server.js
- *
- * (C) 2017 mobile.de GmbH
- *
- * @author <a href="mailto:pahund@team.mobile.de">Patrick Hund</a>
- * @since 09 Feb 2017
- */
 
 const webpack = require('webpack');
 const path = require('path');
 const nodeExternals = require('webpack-node-externals');
 const BUILD_DIR = path.resolve(__dirname, './dist');
 const APP_DIR = path.resolve(__dirname, './application/server');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 
 const config = {
@@ -25,7 +17,7 @@ const config = {
      chunkFilename: '[name].js'
    },
    mode : 'development',
-   target : 'node',
+   target : 'async-node',
    externals: [nodeExternals()],
    resolve: {
         modules: ['node_modules', 'application'],
@@ -39,13 +31,14 @@ const config = {
        use: {
          loader: "babel-loader",
          options: {
-           presets: ['react', 'es2015','stage-2'], // Transpiles JSX and ES6,
-            plugins: [
-              'syntax-dynamic-import',
-              'transform-class-properties',
-              'transform-object-assign',
-              'react-loadable/babel'
-            ],
+             presets: ['@babel/preset-react', '@babel/preset-env'], // Transpiles JSX and ES6,
+             plugins: [
+                 '@babel/syntax-dynamic-import',
+                 '@babel/plugin-transform-runtime',
+                 '@babel/plugin-proposal-class-properties',
+                 '@babel/plugin-transform-object-assign',
+                 'react-loadable/babel'
+             ],
          }
        }
      },
@@ -81,13 +74,13 @@ const config = {
     },
   },*/
    plugins: [
-   new CleanWebpackPlugin(['dist'], { root: path.resolve(__dirname , './'), verbose: true , beforeEmit : true}),
-    new webpack.DefinePlugin({
-       'process.env.NODE_ENV': JSON.stringify('development')
-     }),
-    /*new ReactLoadablePlugin({
-      filename:  path.resolve(__dirname, './public/js/', 'react-loadable.json'),
-    })    */
+       new CleanWebpackPlugin({
+           verbose: true,
+           beforeEmit : true
+       }),
+       new webpack.DefinePlugin({
+           'process.env.NODE_ENV': JSON.stringify('development')
+       }),
   ]
 };
 

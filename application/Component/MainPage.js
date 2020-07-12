@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {getRupeesDisplayableAmountV2} from "../utils/MathUtils";
-
+import '../assets/TaxPage.css'
 class MainPage extends Component {
     constructor(props){
         super(props);
@@ -110,7 +110,7 @@ class MainPage extends Component {
                 <div className="item">
                     <p>Basic Percentage:</p>
                     <select onChange={this.handleBasicChange} placeholder="In % (The percentage of your annual salary, Generally it is 50% of your total annual salary)">
-                        <option value="0.5" selected>50%</option>
+                        <option value="0.5" defaultValue>50%</option>
                         <option value="0.4">40%</option>
                         <option value="0.3">30%</option>
                     </select>

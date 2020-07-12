@@ -1,21 +1,21 @@
-var webpack = require('webpack');
-var path = require('path');
+const webpack = require('webpack');
+const path = require('path');
 
-var BUILD_DIR = path.resolve(__dirname, './../public/js_temp/');
-var APP_DIR = path.resolve(__dirname, './../application/client');
-const merge = require('webpack-merge');
+const BUILD_DIR = path.resolve(__dirname, './../public/js/');
+const APP_DIR = path.resolve(__dirname, './../application/client');
+require('webpack-merge');
 
 const { ReactLoadablePlugin } = require('react-loadable/webpack');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 
 const config = {
     entry: {
-      mobile: APP_DIR + '/index.js',
-      desktop: APP_DIR + '/index_desktop.js',
+      mobile: APP_DIR + '/index.js'
+      //desktop: APP_DIR + '/index_desktop.js',
     },
     output: {
-      filename: '[name]-shiksha-main-[hash].js',
+      filename: '[name]-main-[hash].js',
       path: BUILD_DIR,
       publicPath : '/pwa/public/js/',
       chunkFilename: '[name].[chunkhash].js'
@@ -34,14 +34,14 @@ const config = {
        use: {
          loader: "babel-loader",
          options: {
-           presets: ['react', 'es2015','stage-2'], // Transpiles JSX and ES6
-           plugins: [
-              'syntax-dynamic-import',
-              'transform-class-properties',
-              'transform-object-assign',
-              'babel-plugin-syntax-dynamic-import',
-              'react-loadable/babel'
-              ]
+             presets: ['@babel/preset-react', '@babel/preset-env'], // Transpiles JSX and ES6,
+             plugins: [
+                 '@babel/syntax-dynamic-import',
+                 '@babel/plugin-transform-runtime',
+                 '@babel/plugin-proposal-class-properties',
+                 '@babel/plugin-transform-object-assign',
+                 'react-loadable/babel'
+             ],
          }
        }
      },
@@ -58,15 +58,18 @@ const config = {
 
   },
    plugins: [
-    new CleanWebpackPlugin(['js_temp'], { root: path.resolve(__dirname , './../public/'), verbose: true , beforeEmit : true}),
-    new ReactLoadablePlugin({
-      filename:  path.resolve(__dirname, './../public/js_temp/', 'react-loadable.json'),
-    }),
-    new MiniCssExtractPlugin({
-      // Options similar to the same options in webpackOptions.output
-      // both options are optional
-      filename: "[name].[contenthash].css",
-    }),
+       new CleanWebpackPlugin({
+           verbose: true,
+           beforeEmit : true
+       }),
+       new ReactLoadablePlugin({
+           filename:  path.resolve(__dirname, './../public/js/', 'react-loadable.json'),
+       }),
+       new MiniCssExtractPlugin({
+           // Options similar to the same options in webpackOptions.output
+           // both options are optional
+           filename: "[name].[contenthash].css",
+       }),
     new webpack.ProvidePlugin({
          // lodash
          '_': 'lodash'
